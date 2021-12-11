@@ -6,10 +6,10 @@ import os
 import json
 import re
 
+home = os.getenv("HOME")
+
 
 def add_game():
-    home = os.getenv("HOME")
-
     print("game name (no spaces): ")
     game_name = input()
     print("absolute path to the wine binary (filename too, spaces must be escaped): ")
@@ -18,11 +18,14 @@ def add_game():
     game_bin = input()
     print("environment variables: ")
     env_vars = input()
+    print("launch options to be passed to the game binary: ")
+    game_opts = input()
 
     game = {
         "wine_bin": wine_bin,
         "game_bin": game_bin,
-        "env_vars": env_vars
+        "env_vars": env_vars,
+        "game_opts": game_opts
     }
 
     with open(f"{home}/.local/share/pyGameLauncher/{game_name}.json", "w+") as file:
@@ -30,28 +33,23 @@ def add_game():
 
 
 def print_games():
-    home = os.getenv("HOME")
-
     for filename in os.listdir(f"{home}/.local/share/pyGameLauncher"):
         print(filename[:len(filename) - 5])
 
 
 def launch_game(game_name):
-    home = os.getenv("HOME")
-
     with open(f"{home}/.local/share/pyGameLauncher/{game_name}.json", "r") as file:
         json_object = json.load(file)
 
     env_vars = json_object["env_vars"]
     wine_bin = json_object["wine_bin"]
     game_bin = json_object["game_bin"]
+    game_opts = json_object["game_opts"]
 
-    os.system(f"{env_vars} {wine_bin} {game_bin}")
+    os.system(f"{env_vars} {wine_bin} {game_bin} {game_opts}")
 
 
 def remove_game(game_name):
-    home = os.getenv("HOME")
-
     os.remove(f"{home}/.local/share/pyGameLauncher/{game_name}.json")
 
 
@@ -63,14 +61,12 @@ def new_wine_pfx():
 
 
 def winetricks(game_name):
-    home = os.getenv("HOME")
-
     with open(f"{home}/.local/share/pyGameLauncher/{game_name}.json", "r") as file:
         json_object = json.load(file)
 
     env_vars = json_object["env_vars"]
 
-    prefix = re.search(r'(?<=WINEPREFIX=)[^ ]*', env_vars).group(0)
+    prefix = re.search(r"(?<=WINEPREFIX=)[^ ]*", env_vars).group(0)
 
     os.system(f"WINEPREFIX={prefix} winetricks --gui")
 
@@ -114,8 +110,6 @@ def parse_cmd_args():
 
 
 def setup_env():
-    home = os.getenv("HOME")
-
     if not os.path.exists(f"{home}/.local/share/pyGameLauncher"):
         os.makedirs(f"{home}/.local/share/pyGameLauncher")
 
