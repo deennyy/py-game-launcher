@@ -71,6 +71,12 @@ def winetricks(game_name):
     os.system(f"WINEPREFIX={prefix} winetricks --gui")
 
 
+def edit_game(game_name):
+    editor = os.getenv("EDITOR")
+
+    os.system(f"{editor} {home}/.local/share/pyGameLauncher/{game_name}.json")
+
+
 def print_help():
     print("./launcher.py -h/--help\t\t\tShow this help info")
     print("./launcher.py -l <name>/--launch=<name>\tLaunch the game with the specified name")
@@ -79,11 +85,12 @@ def print_help():
     print("./launcher.py -r <name>/--remove=<name>\tRemove the specified game")
     print("./launcher.py -n/--new\t\t\tCreate a new empty wine prefix")
     print("./launcher.py -t <name>/--tricks=<name>\tRun winetricks for the game with the specified name")
+    print("./launcher.py -e <name>/--edit=<name>\tEdit the config for the game with the specified name")
 
 
 def parse_cmd_args():
-    opts, args = getopt.getopt(sys.argv[1:], "hl:apr:nt:", ["help", "launch=", "add", "print",
-                                                            "remove=", "new", "tricks="])
+    opts, args = getopt.getopt(sys.argv[1:], "hl:apr:nt:e:", ["help", "launch=", "add", "print",
+                                                              "remove=", "new", "tricks=", "edit="])
 
     for opt, arg in opts:
         if opt in ("-h", "--help"):
@@ -106,6 +113,9 @@ def parse_cmd_args():
             exit(0)
         elif opt in ("-t", "--tricks"):
             winetricks(arg)
+            exit(0)
+        elif opt in ("-e", "--edit"):
+            edit_game(arg)
             exit(0)
 
 
