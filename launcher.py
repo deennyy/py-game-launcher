@@ -54,7 +54,7 @@ def remove_game(game_name):
 
 
 def new_wine_pfx():
-    print("absolute path to new prefix: (spaces must be escaped)")
+    print("absolute path to new prefix (spaces must be escaped): ")
     pfx_path = input()
 
     os.system(f"WINEPREFIX={pfx_path} winecfg")
